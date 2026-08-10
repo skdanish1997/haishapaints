@@ -3,20 +3,47 @@ name: Manual Deployment
 on:
   workflow_dispatch:
     inputs:
+      project:
+        description: 'Select the project you want to deploy'
+        required: true
+        type: choice
+        default: 'pidilite'
+        options:
+          - pidilite
+          - haishapaints
+          - pigments
+          - corporate
+
       environment:
         description: 'Select the target environment'
         required: true
         type: choice
-        default: 'staging'
+        default: 'Stage'
         options:
-          - development
-          - staging
-          - production
+          - Dev
+          - Stage
+          - Production
 
 jobs:
   deploy:
     runs-on: ubuntu-22.04
     steps:
-      - name: Run deployment script
+      # --- PIDILITE DEPLOYMENTS ---
+      - name: Deploy Pidilite to Dev
+        if: ${{ github.event.inputs.project == 'pidilite' && github.event.inputs.environment == 'Dev' }}
+        run: echo "Executing Pidilite DEV deployment pipeline..."
+
+      - name: Deploy Pidilite to Stage
+        if: ${{ github.event.inputs.project == 'pidilite' && github.event.inputs.environment == 'Stage' }}
+        run: echo "Executing Pidilite STAGE deployment pipeline..."
+
+      # --- HAISHAPAINTS DEPLOYMENTS ---
+      - name: Deploy Haishapaints to Production
+        if: ${{ github.event.inputs.project == 'haishapaints' && github.event.inputs.environment == 'Production' }}
+        run: echo "Executing Haishapaints PRODUCTION deployment pipeline..."
+
+      # --- FALLBACK / GENERIC LOGIC ---
+      - name: Universal Deployment Log
         run: |
-          echo "Deploying to: ${{ github.event.inputs.environment }}"
+          echo "Triggered workflow for Project: ${{ github.event.inputs.project }}"
+          echo "Target Environment: ${{ github.event.inputs.environment }}"
